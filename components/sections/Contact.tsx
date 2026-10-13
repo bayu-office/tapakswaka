@@ -14,6 +14,40 @@ interface ContactProps {
   contacts: ContactInfo[];
 }
 
+/** Minimal TikTok glyph (Lucide has no official TikTok icon). */
+function TikTokIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z" />
+    </svg>
+  );
+}
+
+/** Minimal Instagram glyph (Lucide version in use has no Instagram export). */
+function InstagramIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+      <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+    </svg>
+  );
+}
+
 /** Map a stored icon name to a Lucide icon (fallback: MapPin). */
 const ICONS: Record<string, LucideIcon> = {
   phone: Phone,
@@ -28,7 +62,54 @@ function resolveIcon(type: ContactInfo["type"], name: string | null): LucideIcon
   return ICONS[type] ?? MapPin;
 }
 
+/** Hardcoded contact channels — always shown regardless of Supabase data. */
+const STATIC_CONTACTS: ContactInfo[] = [
+  {
+    id: "static-address",
+    label: "Alamat",
+    value:
+      "Jl. Singo Joyo Dsn Kemambang RT 7 RW 1 Ds. Sumokembangsri Kec. Balongbendo Kab Sidoarjo",
+    type: "address",
+    icon: "address",
+    link: null,
+    display_order: 0,
+    is_active: true,
+  },
+  {
+    id: "static-email",
+    label: "Email",
+    value: "tapakswaka@gmail.com",
+    type: "email",
+    icon: "email",
+    link: "mailto:tapakswaka@gmail.com",
+    display_order: 1,
+    is_active: true,
+  },
+  {
+    id: "static-tiktok",
+    label: "TikTok",
+    value: "@tapakswakaholidays",
+    type: "social",
+    icon: "tiktok",
+    link: "https://www.tiktok.com/@tapakswakaholidays",
+    display_order: 2,
+    is_active: true,
+  },
+  {
+    id: "static-instagram",
+    label: "Instagram",
+    value: "@tapakswakaholidays",
+    type: "social",
+    icon: "instagram",
+    link: "https://www.instagram.com/tapakswakaholidays",
+    display_order: 3,
+    is_active: true,
+  },
+];
+
 export default function Contact({ contacts }: ContactProps) {
+  const allContacts = [...STATIC_CONTACTS, ...contacts];
+
   return (
     <section id="contact" className="relative bg-zinc-950 py-24">
       <div className="mx-auto max-w-7xl px-6">
@@ -52,17 +133,25 @@ export default function Contact({ contacts }: ContactProps) {
             </p>
 
             <div className="mt-8 space-y-4">
-              {contacts.length === 0 ? (
+              {allContacts.length === 0 ? (
                 <p className="text-sm text-zinc-500">
                   Informasi kontak akan segera tersedia.
                 </p>
               ) : (
-                contacts.map((c) => {
+                allContacts.map((c) => {
+                  const isTiktok = c.icon === "tiktok";
+                  const isInstagram = c.icon === "instagram";
                   const Icon = resolveIcon(c.type, c.icon);
                   const content = (
                     <div className="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-md transition-all duration-300 hover:border-[#00F0FF]/40">
                       <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-black/40 text-[#00F0FF]">
-                        <Icon className="h-5 w-5" />
+                        {isTiktok ? (
+                          <TikTokIcon className="h-5 w-5" />
+                        ) : isInstagram ? (
+                          <InstagramIcon className="h-5 w-5" />
+                        ) : (
+                          <Icon className="h-5 w-5" />
+                        )}
                       </div>
                       <div className="min-w-0">
                         <p className="text-xs uppercase tracking-wide text-zinc-500">
@@ -90,7 +179,6 @@ export default function Contact({ contacts }: ContactProps) {
               )}
             </div>
           </motion.div>
-
           {/* Form */}
           <motion.div
             initial={{ opacity: 0, y: 24 }}
