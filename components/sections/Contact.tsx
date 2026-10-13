@@ -153,11 +153,11 @@ export default function Contact({ contacts }: ContactProps) {
                           <Icon className="h-5 w-5" />
                         )}
                       </div>
-                      <div className="min-w-0">
+                      <div className="min-w-0 flex-1">
                         <p className="text-xs uppercase tracking-wide text-zinc-500">
                           {c.label}
                         </p>
-                        <p className="truncate text-sm font-semibold text-white">
+                        <p className="text-sm font-semibold leading-snug text-white">
                           {c.value}
                         </p>
                       </div>
